@@ -1,7 +1,7 @@
-import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/app/store'
 import { sub } from 'date-fns'
-import { userLoggedOut } from '@/features/auth/authSlice'
+import { logout, userLoggedOut } from '@/features/auth/authSlice'
 import { createAppAsyncThunk } from '@/app/withTypes'
 import { client } from '@/api/client'
 
@@ -124,6 +124,9 @@ const postsSlice = createSlice({
       .addCase(userLoggedOut, (state) => {
         return initialState
       })
+      .addCase(logout.fulfilled, (state) => {
+        return initialState
+      })
       .addCase(fetchPosts.pending, (state, action) => {
         state.status = 'pending'
       })
@@ -150,6 +153,20 @@ export default postsSlice.reducer
 export const selectAllPosts = (state: RootState) => state.posts.posts
 
 export const selectPostById = (state: RootState, postId: string) => state.posts.posts.find((post) => post.id === postId)
+
+export const selectPostsByUser = (state: RootState, userId: string) => {
+  const allPosts = selectAllPosts(state)
+  return allPosts.filter(p => p.user === userId)
+}
+
+// export const selectPostsByUser = createSelector(
+//   [
+//     selectAllPosts,
+//     (state: RootState, userId: string) => userId
+//
+//   ],
+//   (posts, userId) => posts.filter(post => post.user === userId)
+// )
 
 export const selectPostsStatus = (state: RootState) => state.posts.status
 export const selectPostsError = (state: RootState) => state.posts.error

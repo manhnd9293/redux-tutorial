@@ -6,26 +6,8 @@ import { ReactionButtons } from '@/features/posts/ReactionButtons'
 import { useEffect } from 'react'
 import { Spinner } from '@/components/Spinner'
 import { TimeAgo } from '@/components/TimeAgo'
+import PostExcerpt from '@/features/posts/PostExcerpt'
 
-interface PostExcerptProps {
-  post: Post
-}
-
-function PostExcerpt({ post }: PostExcerptProps) {
-  return (
-    <article className="post-excerpt" key={post.id}>
-      <h3>
-        <Link to={`/posts/${post.id}`}>{post.title}</Link>
-      </h3>
-      <div>
-        <PostAuthor userId={post.user} />
-        <TimeAgo timestamp={post.date} />
-      </div>
-      <p className="post-content">{post.content.substring(0, 100)}</p>
-      <ReactionButtons post={post} />
-    </article>
-  )
-}
 
 
 export const PostsList = () => {
@@ -33,7 +15,6 @@ export const PostsList = () => {
 
   const dispatch = useAppDispatch()
   const posts = useAppSelector(selectAllPosts)
-  const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
   const postStatus = useAppSelector(selectPostsStatus)
   const postsError = useAppSelector(selectPostsError)
 
@@ -57,7 +38,7 @@ export const PostsList = () => {
     content = orderedPosts.map(post => (
       <PostExcerpt key={post.id} post={post} />
     ))
-  } else if (postStatus === 'rejected') {
+  } else {
     content = <div>{postsError}</div>
   }
 
